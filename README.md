@@ -14,12 +14,14 @@ cmake ../..
 make -j 4 # replace "4" with the number of cores on your machine
 ```
 # Environments
-The library contains a 2D environment to choose from. 
+The library contains a 2D environment. However, you can make your own environments.
 ![Snipaste_2025-05-19_12-32-11](https://github.com/user-attachments/assets/07b7f216-46b4-4953-8f6a-b3c15e035910)
 
 # Usage
-
-
+After the compilation of ompl-1.3.1-IHBFMTstart-2d-beta is successful, you can run the demo of IHBFMT* (``` ompl-1.3.1-2d-IHBFMTstart-beta\demos\TestPlanning.cpp```).
+```
+ompl-1.3.1-2d-IHBFMTstart-beta\build\Release\bin\demo_TestPlanning
+```
 
 # Reference paper: 
 J. Xu, C. Huang, L. Li, B. Zhang, J. Chen, Y. He, & Z. Wei. (2025). An asymptotically optimal sampling-based method for high-dimensional complex motion planning using novel efficient heuristics. Robotics and Autonomous Systems. (Under Review)
