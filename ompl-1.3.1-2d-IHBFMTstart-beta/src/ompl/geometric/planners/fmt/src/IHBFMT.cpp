@@ -1186,7 +1186,7 @@ bool IHBFMT::plan(BiDirMotion *x_init, BiDirMotion *x_goal, BiDirMotion *&connec
 
 
             // Check if the algorithm should terminate.  Possibly redefines connection_point.
-            if ((tempCost.value() - lastCost.value()) >= 0.02 * tempCost.value() || opt_->isSatisfied(lastCost))
+            if ((tempCost.value() - lastCost.value()) >= 0.02 * tempCost.value() || lastCost.value() < costthrold.value())
             {
                 tempCost = lastCost ;
 
@@ -1219,7 +1219,7 @@ bool IHBFMT::plan(BiDirMotion *x_init, BiDirMotion *x_goal, BiDirMotion *&connec
 
         }
 
-        if (ptc || opt_->isSatisfied(lastCost))
+        if (ptc || lastCost.value() < costthrold.value())
             break;
 
 
