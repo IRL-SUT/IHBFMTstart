@@ -1,39 +1,3 @@
-/*********************************************************************
-* Software License Agreement (BSD License)
-*
-*  Copyright (c) 2013, Rice University
-*  All rights reserved.
-*
-*  Redistribution and use in source and binary forms, with or without
-*  modification, are permitted provided that the following conditions
-*  are met:
-*
-*   * Redistributions of source code must retain the above copyright
-*     notice, this list of conditions and the following disclaimer.
-*   * Redistributions in binary form must reproduce the above
-*     copyright notice, this list of conditions and the following
-*     disclaimer in the documentation and/or other materials provided
-*     with the distribution.
-*   * Neither the name of the Rice University nor the names of its
-*     contributors may be used to endorse or promote products derived
-*     from this software without specific prior written permission.
-*
-*  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-*  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-*  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
-*  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
-*  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
-*  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
-*  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-*  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-*  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
-*  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
-*  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-*  POSSIBILITY OF SUCH DAMAGE.
-*********************************************************************/
-
-/* Author: Ioan Sucan */
-
 #include <ompl/base/spaces/RealVectorStateSpace.h>
 #include <ompl/geometric/SimpleSetup.h>
 #include <ompl/geometric/planners/rrt/RRTstar.h>
@@ -43,13 +7,12 @@
 #include <ompl/geometric/planners/rrt/InformedRRTstar.h>
 #include <ompl/geometric/planners/prm/PRMstar.h>
 #include <ompl/geometric/planners/bitstar/BITstar.h>
-#include <ompl/geometric/planners/fmt/IFMTStar.h>
 #include <ompl/geometric/planners/fmt/FMT.h>
-#include <ompl/geometric/planners/fmt/BFMT.h>
+#include <ompl/geometric/planners/fmt/IHBFMT.h> //Our IHBFMT
 #include <ompl/util/PPM.h>
 #include <ompl/base/PlannerTerminationCondition.h>
 #include <ompl/base/OptimizationObjective.h>
- #include <ompl/base/objectives/PathLengthOptimizationObjective.h>
+#include <ompl/base/objectives/PathLengthOptimizationObjective.h>
 
 #include <ompl/config.h>
 #include <../tests/resources/config.h>
@@ -91,23 +54,16 @@ public:
             ss_->setStateValidityChecker([this](const ob::State *state) { return isStateValid(state); });
             space->setup();
             ss_->getSpaceInformation()->setStateValidityCheckingResolution(1.0 / space->getMaximumExtent());
-            ss_->setPlanner(std::make_shared<og::BFMT>(ss_->getSpaceInformation()));
+            ss_->setPlanner(std::make_shared<og::IHBFMT>(ss_->getSpaceInformation()));
 
-             // 创建BFMT规划器
-            auto bfmt = std::make_shared<og::BFMT>(ss_->getSpaceInformation());
             
-            // 设置BFMT的终止模式（true为最优性，false为可行性）
-            bfmt->params().setParam("optimality", "true");  // 启用最优性模式
+            auto ihbfmt = std::make_shared<ompl::geometric::IHBFMT>(ss_->getSpaceInformation());
 
-            bfmt->params().setParam("cost_threshold", "1900"); // cost_threshold
-            
-            // 设置优化目标（路径长度最小化）
-            ss_->setOptimizationObjective(std::make_shared<ob::PathLengthOptimizationObjective>(ss_->getSpaceInformation()));
-            
-            // 设置规划器
-            ss_->setPlanner(bfmt);
-//            ss_->setPlanner(std::make_shared<og::FMT>(ss_->getSpaceInformation()));
-//            ss_->setPlanner(std::make_shared<og::InformedRRTstar>(ss_->getSpaceInformation()));
+            ihbfmt->params().setParam("optimality", "true");
+            ihbfmt->params().setParam("cost_threshold", "1700");
+
+            ss_->setPlanner(ihbfmt);
+
         }
     }
 
@@ -122,13 +78,15 @@ public:
         goal[0] = goal_row;
         goal[1] = goal_col;
         ss_->setStartAndGoalStates(start, goal);
-        ss_->print();  // 打印配置
+
+        auto opt = ss_->getProblemDefinition()->getOptimizationObjective();
+        ss_->print();
         // generate a few solutions; all will be added to the goal;
         for (int i = 0 ; i < 1 ; ++i)
         {
             if (ss_->getPlanner())
                 ss_->getPlanner()->clear();
-            ss_->solve(100000); // 持续秒数
+            ss_->solve(200); // Set Planning Time
         }
         const std::size_t ns = ss_->getProblemDefinition()->getSolutionCount();
         OMPL_INFORM("Found %d solutions", (int)ns);
@@ -136,14 +94,13 @@ public:
         {
             ss_->simplifySolution();
             og::PathGeometric &p = ss_->getSolutionPath();
-//            ss_->getPathSimplifier()->simplifyMax(p);
+            //            ss_->getPathSimplifier()->simplifyMax(p);
             ss_->getPathSimplifier()->smoothBSpline(p);
             OMPL_DEBUG("Simple path cost: %f", ss_->getProblemDefinition()->getSolutionPath()->cost(ss_->getProblemDefinition()->getOptimizationObjective()));
-            //ss_->getSolutionPath().print(std::cout);   // 打印化简后点解
             return true;
         }
         
-            return false;
+        return false;
     }
 
     void recordSolution()
@@ -176,7 +133,6 @@ private:
     {
         const int w = std::min((int)state->as<ob::RealVectorStateSpace::StateType>()->values[0], maxWidth_);
         const int h = std::min((int)state->as<ob::RealVectorStateSpace::StateType>()->values[1], maxHeight_);
-        //std::cout << "stateValue: " << (int)state->as<ob::RealVectorStateSpace::StateType>()->values[0] << std::endl;
         const ompl::PPM::Color &c = ppm_.getPixel(h, w);
         return c.red > 127 && c.green > 127 && c.blue > 127;
     }
@@ -196,7 +152,6 @@ int main(int /*argc*/, char ** /*argv*/)
     boost::filesystem::path path(TEST_RESOURCES_DIR);
     Plane2DEnvironment env((path / "ppm/floor.ppm").string().c_str());
 
-//    if (env.plan(50, 50, 1000, 1000))  //  env.plan(0, 0, 777, 1265)
     if (env.plan(50, 50, 777, 1265))
     {
         env.recordSolution();
