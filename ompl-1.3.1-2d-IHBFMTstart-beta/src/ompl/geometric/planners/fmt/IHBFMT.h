@@ -586,7 +586,7 @@ namespace ompl
             base::Cost tempCost;
             base::Cost previousCost;
             base::Cost lastCost;
-            base::Cost costthrold{1700.0};
+            base::Cost costthrold;
             BiDirMotion *initMotion;
             BiDirMotion *goalMotion;
             base::State *goalState_;
@@ -617,9 +617,8 @@ namespace ompl
             }
 
             /*original image variable*/
-
             /*you should set your own map path*/
-            Mat envImage_ = cv::imread("/home/jing/workspace/ompl-1.3.11-2dpic-ihbfmt/tests/resources/ppm/floor.ppm", 1);
+            Mat envImage_ = cv::imread("/home/jing/workspace/IHBFMTstart-main/ompl-1.3.1-2d-IHBFMTstart-beta/tests/resources/ppm/floor.ppm", 1);
 
             // For sorting a list of costs and getting only their sorted indices
             struct CostIndexCompare
