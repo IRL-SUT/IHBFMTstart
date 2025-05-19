@@ -37,8 +37,6 @@
 #include <ompl/base/SpaceInformation.h>
 #include <ompl/base/spaces/SE3StateSpace.h>
 #include <ompl/geometric/planners/rrt/RRTConnect.h>
-#include <ompl/geometric/planners/rrt/RRT.h>
-#include <ompl/geometric/planners/fmt/IFMTStar.h>
 #include <ompl/geometric/SimpleSetup.h>
 
 #include <ompl/config.h>
@@ -98,9 +96,7 @@ void plan()
     pdef->setStartAndGoalStates(start, goal);
 
     // create a planner for the defined space
-    auto planner(std::make_shared<og::IFMTStar>(si));    // modify
-    //auto planner(std::make_shared<og::RRT>(si));    // modify
-    std::cout << "Hello Word" << std::endl;
+    auto planner(std::make_shared<og::RRTConnect>(si));
 
     // set the problem we are trying to solve for the planner
     planner->setProblemDefinition(pdef);
