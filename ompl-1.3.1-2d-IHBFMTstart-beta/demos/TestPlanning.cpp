@@ -60,7 +60,7 @@ public:
             auto ihbfmt = std::make_shared<ompl::geometric::IHBFMT>(ss_->getSpaceInformation());
 
             ihbfmt->params().setParam("optimality", "true");
-            ihbfmt->params().setParam("cost_threshold", "1700");
+            ihbfmt->params().setParam("cost_threshold", "1750");
 
             ss_->setPlanner(ihbfmt);
 
