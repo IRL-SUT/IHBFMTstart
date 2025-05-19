@@ -15,9 +15,7 @@ make -j 4 # replace "4" with the number of cores on your machine
 ```
 # Environments
 The library contains a 2D environment to choose from. 
-
-
-
+![Snipaste_2025-05-19_12-32-11](https://github.com/user-attachments/assets/07b7f216-46b4-4953-8f6a-b3c15e035910)
 
 # Usage
 
