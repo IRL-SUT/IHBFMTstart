@@ -2,7 +2,8 @@
 An asymptotically optimal sampling-based method for high-dimensional complex motion planning.
 # Dependencies
 The Open Motion Planning Library (OMPL) 
-Install dependencies according to OMPLapp 1.4.0 requirements.
+* Install dependencies according to OMPLapp 1.3.1 requirements.
+
 # Installation
 Pull this repository to /omplapp-1.4.0-Source-IHBFMTstart-beta.
 ```
