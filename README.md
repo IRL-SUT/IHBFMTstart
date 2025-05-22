@@ -17,6 +17,9 @@ make -j 4 # replace "4" with the number of cores on your machine
 The library contains a 2D environment. However, you can make your own environments.
 ![Snipaste_2025-05-19_12-32-11](https://github.com/user-attachments/assets/07b7f216-46b4-4953-8f6a-b3c15e035910)
 
+![ihbfmt_gif](https://github.com/user-attachments/assets/e7ceb97f-b1a9-4285-a38a-1c01aff35d82)
+
+
 # Usage
 Please note: before using our Testplanning, please modify the map path in **IHBFMT.h**.
 ```
